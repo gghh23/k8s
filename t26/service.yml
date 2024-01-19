@@ -1,0 +1,142 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+        - name: nginx
+          image: dmitiriy/artem_forever_nginx
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/conf.d/serv-nginx.conf
+              subPath: serv-nginx.conf
+            - name: index
+              mountPath: /var/www/html/index.html
+              subPath: index.html
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /index.html
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /index.html
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              scheme: HTTP
+              path: /index.html
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+        - name: apache
+          image: dmitiriy/artem_forever_apache
+          ports:
+            - containerPort: 8000
+      volumes:
+        - name: config
+          secret:
+            secretName: nginx-config
+        - name: index
+          configMap:
+            name: index-config
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: index-config
+data:
+  index.html: |
+    <body bgcolor="orange">
+    <a href="https://google.com">Google</a>
+    <a href="/music/m.mp3" download>music</a>
+    <a href="index.php">infophp</a>
+    <a href="/page/page.html">page</a>
+    <a href="/images/180/azure.jpeg">image1</a>
+    <a href="/images/aws.png">image2</a>
+    <a href="/redblue">redblue</a>
+    <a href="/error500">error500</a>
+    <a href="/error400">error400</a>
+    <a href="pagecpu.php">cpu</a>
+    </body>
+
+---
+#apiVersion: v1
+#kind: Secret
+#metadata:
+#  name: nginx-config
+#type: Opaque
+#data:
+#  serv-nginx.conf: |
+#        dXBzdHJlYW0gY29sb3J7CiAgICAgICAgbGVhc3RfY29ubjsKICAgICAgICBzZXJ2ZXIgbG9jYWxo
+#        b3N0OjgwMDE7CiAgICAgICAgc2VydmVyIGxvY2FsaG9zdDo4MDAyOwp9CiNzZXJ2ZXIgewojICAg
+#        IGxpc3RlbiA4MDsKIyAgICBzZXJ2ZXJfbmFtZSBteWhvc3RmcmVlZG5zLmZyZWVkeW5hbWljZG5z
+#        Lm5ldDsKIyAgICByZXR1cm4gMzAxIGh0dHBzOi8vJGhvc3QkcmVxdWVzdF91cmk7CiN9CgoKCgoK
+#        c2VydmVyIHsKICAgICAgICAjbGlzdGVuIDQ0MyBzc2w7CiAgICAgICAgbGlzdGVuIDgwOwogICAg
+#        ICAgIHJvb3QgL3Zhci93d3cvaHRtbC87CiAgICAgICAgaW5kZXggaW5kZXguaHRtbDsKICAgICAg
+#        ICBzZXJ2ZXJfbmFtZSBteWhvc3RmcmVlZG5zLmZyZWVkeW5hbWljZG5zLm5ldDsKICAgICAgICAj
+#        c3NsX2NlcnRpZmljYXRlIHJvb3RDQS5wZW07CiAgICAgICAgI3NzbF9jZXJ0aWZpY2F0ZV9rZXkg
+#        cm9vdENBLmtleTsKICAgICAgICAjc3NsX3Byb3RvY29scyBUTFN2MS4yIFRMU3YxLjM7IAogICAg
+#        ICAgICNzc2xfcHJlZmVyX3NlcnZlcl9jaXBoZXJzIG9uOwogICAgICAgIAogICAgICAgIGxvY2F0
+#        aW9uICAvcmVkYmx1ZSB7CiAgICAgICAgICAgICAgICBwcm94eV9wYXNzIGh0dHA6Ly9jb2xvci87
+#        CiAgICAgICAgfQogICAgICAgIGxvY2F0aW9uIC9tdXNpYy9cLigubXAzKSQgewogICAgICAgICAg
+#        ICAgICAgcm9vdCAvbXVzaWMvbS5tcDM7CiAgICAgICAgICAgICAgICBhZGRfaGVhZGVyIENvbnRl
+#        bnQtZGlzcG9zaXRpb24gImF0dGFjaG1lbnQiOwogICAgICAgICAgICAgICAgZGVmYXVsdF90eXBl
+#        IGF1ZGlvL29jdGV0LXN0cmVhbTsKICAgICAgICB9CiAgICAgICAgbG9jYXRpb24gfiAvcGFnZS9c
+#        LiguaHRtbCkkIHsKICAgICAgICAgICAgICAgIHJvb3QgL3BhZ2UvcGFnZS5odG1sOwogICAgICAg
+#        IH0KICAgICAgICBsb2NhdGlvbiB+IC9pbWFnZXMvKD88cm90YXRlPlswLTldKykgewogICAgICAg
+#        ICAgICAgICAgYWxpYXMgL3Zhci93d3cvaHRtbC9pbWFnZXMvMTgwL2F6dXJlLmpwZWc7CiAgICAg
+#        ICAgICAgICAgICBpbWFnZV9maWx0ZXIgcm90YXRlICRyb3RhdGU7CiAgICAgICAgfQogICAgICAg
+#        IAogICAgICAgIGxvY2F0aW9uIH4gL2ltYWdlcy9cLigucG5nKSQgewogICAgICAgICAgICAgICAg
+#        YWxpYXMgL3Zhci93d3cvaHRtbC9pbWFnZXMvYXdzLnBuZzsKICAgICAgICB9CiAgICAgICAgbG9j
+#        YXRpb24gfiBcLnBocCQgewogICAgICAgICAgICAgICAgcHJveHlfcGFzcyBodHRwOi8vbG9jYWxo
+#        b3N0OjgwMDA7CiAgICAgICAgfQogICAgICAgIGxvY2F0aW9uIH4vZXJyb3I1MDAgewogICAgICAg
+#        ICAgICAgICAgcHJveHlfcGFzcyBodHRwOi8vbG9jYWxob3N0OjgwMDU7CiAgICAgICAgfQogICAg
+#        ICAgIGxvY2F0aW9uIH4vZXJyb3I0MDAgewogICAgICAgICAgICAgICAgcm9vdCAvYXNkYXNkbGFv
+#        ZDsKICAgICAgICB9CiAgICAgICAgbG9jYXRpb24gPSBwYWdlY3B1LnBocHsKICAgICAgICAgICAg
+#        ICAgIHJvb3QgaXBocC9wYWdlY3B1LnBocDsKICAgICAgICB9Cn0KCnNlcnZlciB7CiN0YXNrNSAg
+#        CiAgICAgICAgbGlzdGVuIDgwMDE7CiAgICAgICAgbGlzdGVuIFs6Ol06ODAwMTsKICAgICAgICBy
+#        b290IC92YXIvd3d3L2h0bWwvc2VydjE7CiAgICAgICAgaW5kZXggaW5kZXguaHRtbDsKICAgICAg
+#        ICBzZXJ2ZXJfbmFtZSBsb2NhbGhvc3Q7Cgp9CgpzZXJ2ZXIgewogICAgICAgIGxpc3RlbiA4MDAy
+#        OyAgICAgIAogICAgICAgIGxpc3RlbiBbOjpdOjgwMDI7CiAgICAgICAgcm9vdCAvdmFyL3d3dy9o
+#        dG1sL3NlcnYyOwogICAgICAgIGluZGV4IGluZGV4Lmh0bWw7CiAgICAgICAgc2VydmVyX25hbWUg
+#        bG9jYWxob3N0OwoKfQoK
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    env: dep
+spec:
+  selector:
+    app: nginx
+  type: NodePort
+  ports:
+    - name: nginx-listener
+      protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30000
