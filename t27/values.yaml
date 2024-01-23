@@ -1,0 +1,5 @@
+containers:
+  image_nginx: dmitiriy/artem_forever_nginx
+  image_apache: dmitiriy/artem_forever_apache
+
+replicas: 1
