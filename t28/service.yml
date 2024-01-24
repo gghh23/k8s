@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+        - name: nginx
+          image: dmitiriy/artem_forever_nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/conf.d/serv-nginx.conf
+              subPath: serv-nginx.conf
+            - name: index
+              mountPath: /var/www/html/index.html
+              subPath: index.html
+            - name: auth
+              mountPath: /etc/nginx/.htpasswd
+              subPath: .htpasswd
+
+        - name: apache
+          image: dmitiriy/artem_forever_apache
+          ports:
+            - containerPort: 8000
+      volumes:
+        - name: config
+          secret:
+            secretName: nginx-config
+        - name: index
+          configMap:
+            name: index-config
+        - name: auth
+          secret:  
+            secretName: nginx-http-auth
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: index-config
+data:
+  index.html: |
+    <body bgcolor="orange">
+    <a href="https://google.com">Google</a>
+    <a href="/music/m.mp3" download>music</a>
+    <a href="index.php">infophp</a>
+    <a href="/page/page.html">page</a>
+    <a href="/images/180/azure.jpeg">image1</a>
+    <a href="/images/aws.png">image2</a>
+    <a href="/redblue">redblue</a>
+    <a href="/error500">error500</a>
+    <a href="/error400">error400</a>
+    <a href="pagecpu.php">cpu</a>
+    </body>
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    env: dep
+spec:
+  selector:
+    app: nginx
+  type: NodePort
+  ports:
+    - name: nginx-listener
+      protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30000
