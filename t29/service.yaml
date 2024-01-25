@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+        - name: nginx
+          image: dmitiriy/artem_forever_nginx:latest
+          ports:
+            - containerPort: 80
+
+
+        - name: apache
+          image: dmitiriy/artem_forever_apache
+          ports:
+            - containerPort: 8000
+
+
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    env: dep
+spec:
+  selector:
+    app: nginx
+  type: LoadBalancer
+  ports:
+    - name: nginx-listener
+      protocol: TCP
+      port: 80
+      targetPort: 80
