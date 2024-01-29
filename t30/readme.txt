@@ -1,0 +1,2 @@
+kubectl patch service/kube-prom-stack-grafana  -n monitoring -p '{"spec": {"type": "NodePort"}}' 
+https://cmakkaya.medium.com/kubernetes-creating-and-testing-a-horizontal-pod-autoscaling-hpa-in-kubernetes-cluster-548f2378f0c3
