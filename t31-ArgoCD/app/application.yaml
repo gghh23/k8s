@@ -14,7 +14,7 @@ source:
   path: t31-ArgoCD
 destination:
   server: https://kubernets.default.svc
-  namespace: ns-app-nginx
+  namespace: argocd
 
 syncPolicy:
   syncOptions:

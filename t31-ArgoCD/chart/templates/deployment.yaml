@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: {{ .Values.container.image_nginx }}
+          image: {{ .Values.containers.image_nginx }}
           ports:
             - containerPort: 80
           volumeMounts:
@@ -27,30 +27,30 @@ spec:
             - name: index
               mountPath: /var/www/html/index.html
               subPath: index.html
-          readinessProbe:
-            httpGet:
-              scheme: HTTP
-              path: /index.html
-              port: 80
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              scheme: HTTP
-              path: /index.html
-              port: 80
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          startupProbe:
-            httpGet:
-              scheme: HTTP
-              path: /index.html
-              port: 80
-            initialDelaySeconds: 10
-            periodSeconds: 5
+         # readinessProbe:
+         #   httpGet:
+         #     scheme: HTTP
+         #     path: /index.html
+         #     port: 80
+         #   initialDelaySeconds: 10
+         #   periodSeconds: 5
+         # livenessProbe:
+         #   httpGet:
+         #     scheme: HTTP
+         #     path: /index.html
+         #     port: 80
+         #   initialDelaySeconds: 10
+         #   periodSeconds: 5
+         # startupProbe:
+         #   httpGet:
+         #     scheme: HTTP
+         #     path: /index.html
+         #     port: 80
+         #   initialDelaySeconds: 10
+         #   periodSeconds: 5
 
         - name: apache
-          image: {{ .Values.container.image_apache }}
+          image: {{ .Values.containers.image_apache }}
           ports:
             - containerPort: 8000
       volumes:
