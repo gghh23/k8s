@@ -27,6 +27,9 @@ spec:
             - name: index
               mountPath: /var/www/html/index.html
               subPath: index.html
+            - name: auth
+              mountPath: /etc/nginx/.htpasswd
+              subPath: .htpasswd
          # readinessProbe:
          #   httpGet:
          #     scheme: HTTP
@@ -60,3 +63,6 @@ spec:
         - name: index
           configMap:
             name: index-config
+        - name: auth
+          secret:
+            secretName: nginx-http-auth

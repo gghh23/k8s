@@ -1,24 +1,13 @@
-apiVersion: argoproj.io/v2alpha1
-kind: Application
-metadata:
-  name: nginx-app-argocd
-  namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
-spec:
-  project: default
-
+project: default
 source:
-  repoURL: https://github.com/gghh23/k8s.git
+  repoURL: 'https://github.com/gghh23/k8s.git'
+  path: t31-ArgoCD/chart
   targetRevision: HEAD
-  path: t31-ArgoCD
+  helm:
+    valueFiles:
+      - values.yaml
 destination:
-  server: https://kubernets.default.svc
-  namespace: argocd
+  server: 'https://kubernetes.default.svc'
+  namespace: default
 
-syncPolicy:
-  syncOptions:
-    - CreateNamespace=true
-  automated:
-    selfHeal: true
-    prune: true
+
