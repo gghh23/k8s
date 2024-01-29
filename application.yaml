@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-app-argocd
+  namespace: argocd 
+spec:
+  project: default
+
+source: 
+  repoURL: https://github.com/gghh23/k8s.git
+  targetRevision: HEAD
+  path: t31-ArgoCD
+destination:
+  server: https://kubernets.default.svc
+  namespace: ns-app-nginx
+
+syncPolicy:
+  syncOptions:
+  - CreateNamespace=true
+
+automated:
+  selfHeal: true
+  prune: true
