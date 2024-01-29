@@ -41,7 +41,7 @@ metadata:
 spec:
   selector:
     app: nginx
-  type: LoadBalancer
+  type: NodePort
   ports:
     - name: nginx-listener
       protocol: TCP

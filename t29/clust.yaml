@@ -4,6 +4,9 @@ metadata:
   name: aws-cluster
   region: us-east-1
 
+vpc:
+  id: 
+
 managedNodeGroups:
 - name: worker-node
   desiredCapacity: 1
