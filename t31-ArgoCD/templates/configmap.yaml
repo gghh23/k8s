@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: index-config
+data:
+  index.html: |
+    <body bgcolor="orange">
+    <a href="https://google.com">Google</a>
+    <a href="/music/m.mp3" download>music</a>
+    <a href="index.php">infophp</a>
+    <a href="/page/page.html">page</a>
+    <a href="/images/180/azure.jpeg">image1</a>
+    <a href="/images/aws.png">image2</a>
+    <a href="/redblue">redblue</a>
+    <a href="/error500">error500</a>
+    <a href="/error400">error400</a>
+    <a href="pagecpu.php">cpu</a>
+    </body>
