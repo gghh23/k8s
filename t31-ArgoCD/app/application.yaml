@@ -1,3 +1,9 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app
+  namespace: argocd
+spec:
 project: default
 source:
   repoURL: 'https://github.com/gghh23/k8s.git'
